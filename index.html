@@ -5,56 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XRP Nieuws Dashboard</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f4f4f4;
-  }
-  header {
-    background: #222;
-    color: white;
-    padding: 10px;
-    text-align: center;
-  }
-  #percent-bar {
-    display: flex;
-    height: 30px;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-  }
-  .buy-bar {
-    background: green;
-    text-align: center;
-  }
-  .sell-bar {
-    background: red;
-    text-align: center;
-  }
-  #news-list {
-    padding: 20px;
-  }
-  .news-item {
-    background: white;
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  .news-title a {
-    font-size: 18px;
-    font-weight: bold;
-    color: #0077cc;
-    text-decoration: none;
-  }
-  .news-title a:hover {
-    text-decoration: underline;
-  }
-  .news-meta {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-  }
+  body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+  header { background: #222; color: white; padding: 10px; text-align: center; }
+  #percent-bar { display: flex; height: 30px; font-size: 14px; font-weight: bold; color: white; }
+  .buy-bar { background: green; text-align: center; }
+  .sell-bar { background: red; text-align: center; }
+  #news-list { padding: 20px; }
+  .news-item { background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .news-title a { font-size: 18px; font-weight: bold; color: #0077cc; text-decoration: none; }
+  .news-title a:hover { text-decoration: underline; }
+  .news-meta { font-size: 12px; color: #666; margin-top: 5px; }
 </style>
 </head>
 <body>
@@ -67,12 +27,23 @@
 <div id="news-list">Nieuws wordt geladen...</div>
 
 <script>
-function getXrpBuyerSellerPercentage() {
-  // Simulatie: later kan hier een echte API voor marktdata
-  return {
-    buyers: Math.floor(Math.random() * 60) + 20, // 20% - 80%
-    sellers: Math.floor(Math.random() * 40) + 10 // 10% - 50%
-  };
+async function getXrpBuyerSellerPercentage() {
+  try {
+    const res = await fetch("https://api.binance.com/api/v3/depth?symbol=XRPUSDT&limit=100");
+    const data = await res.json();
+
+    const totalBids = data.bids.reduce((sum, bid) => sum + parseFloat(bid[1]), 0);
+    const totalAsks = data.asks.reduce((sum, ask) => sum + parseFloat(ask[1]), 0);
+    const total = totalBids + totalAsks;
+
+    return {
+      buyers: ((totalBids / total) * 100).toFixed(1),
+      sellers: ((totalAsks / total) * 100).toFixed(1)
+    };
+  } catch (err) {
+    console.error("Fout bij ophalen marktdata:", err);
+    return { buyers: 50, sellers: 50 }; // fallback
+  }
 }
 
 async function loadNews() {
@@ -82,21 +53,19 @@ async function loadNews() {
   barContainer.innerHTML = '';
 
   try {
-    // Koop/verkoop percentages
-    const stats = getXrpBuyerSellerPercentage();
-    const total = stats.buyers + stats.sellers;
-    const buyerWidth = (stats.buyers / total * 100).toFixed(1);
-    const sellerWidth = (stats.sellers / total * 100).toFixed(1);
+    // 1️⃣ Koop/verkoop percentages ophalen
+    const stats = await getXrpBuyerSellerPercentage();
+    const buyerWidth = stats.buyers;
+    const sellerWidth = stats.sellers;
 
     barContainer.innerHTML = `
       <div class="buy-bar" style="width:${buyerWidth}%;">${stats.buyers}% kopen</div>
       <div class="sell-bar" style="width:${sellerWidth}%;">${stats.sellers}% verkopen</div>
     `;
 
-    // Live nieuws ophalen
+    // 2️⃣ Nieuws ophalen
     const apiKey = "38347feea47a4f0ea7f65acad44fd0f8";
     const url = `https://newsapi.org/v2/everything?q=XRP&language=en&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
-
     const res = await fetch(url);
     const data = await res.json();
 
@@ -105,7 +74,7 @@ async function loadNews() {
       return;
     }
 
-    // HTML genereren
+    // 3️⃣ HTML genereren
     let html = '';
     data.articles.forEach(article => {
       const date = new Date(article.publishedAt).toLocaleString("nl-NL");
@@ -128,7 +97,7 @@ async function loadNews() {
 // Eerste keer laden
 loadNews();
 
-// Ververs elke 5 minuten
+// Elke 5 minuten verversen
 setInterval(loadNews, 300000);
 </script>
 
