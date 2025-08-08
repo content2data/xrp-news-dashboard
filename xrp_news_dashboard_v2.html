@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -134,11 +135,13 @@ async function loadNews() {
     const buyerWidth = (stats.buyers / total * 100).toFixed(1);
     const sellerWidth = (stats.sellers / total * 100).toFixed(1);
 
+    // Weergave van de koop/verkoop balk
     barContainer.innerHTML = `
       <div class="buy-bar" style="width:${buyerWidth}%;">${stats.buyers}% kopen</div>
       <div class="sell-bar" style="width:${sellerWidth}%;">${stats.sellers}% verkopen</div>
     `;
 
+    // Nieuws tonen
     let html = '';
     dummyNews.forEach((item, i) => {
       const date = generateRandomDate();
@@ -157,6 +160,7 @@ async function loadNews() {
   }
 }
 
+// Eerste laadbeurt en elke 5 minuten automatisch
 loadNews();
 setInterval(loadNews, 5 * 60 * 1000);
 </script>
