@@ -14,7 +14,7 @@ Een simpele webapp die de top 10 nieuwsfeiten over XRP toont, inclusief koop/ver
 2. Maak een nieuwe repository aan, bijvoorbeeld `xrp-news-dashboard`
 3. Upload **index.html** naar de repository
 4. Ga naar **Settings → Pages** en zet Source op `main` en root (`/`)
-5. Je app is online op: `https://<content2data>.github.io/xrp-news-dashboard/`
+5. Je app is online op: `https://content2data.github.io/xrp-news-dashboard/`
 
 ## Credits
 Gemaakt met ❤️ door jou (en een beetje hulp van ChatGPT)
