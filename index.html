@@ -95,7 +95,8 @@ async function loadNews() {
 
     // Live nieuws ophalen
     const apiKey = "38347feea47a4f0ea7f65acad44fd0f8";
-    const url = `https://newsapi.org/v2/everything?q=XRP&language=nl&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
+    const url = `https://newsapi.org/v2/everything?q=XRP&language=en&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
+
     const res = await fetch(url);
     const data = await res.json();
 
