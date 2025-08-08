@@ -1,20 +1,60 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>XRP Nieuws Dashboard</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
-  header { background: #222; color: white; padding: 10px; text-align: center; }
-  #percent-bar { display: flex; height: 30px; font-size: 14px; font-weight: bold; color: white; }
-  .buy-bar { background: green; text-align: center; }
-  .sell-bar { background: red; text-align: center; }
-  #news-list { padding: 20px; }
-  .news-item { background: white; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .news-title a { font-size: 18px; font-weight: bold; color: #0077cc; text-decoration: none; }
-  .news-title a:hover { text-decoration: underline; }
-  .news-meta { font-size: 12px; color: #666; margin-top: 5px; }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f4f4;
+  }
+  header {
+    background: #222;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  #percent-bar {
+    display: flex;
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+  }
+  .buy-bar {
+    background: green;
+    text-align: center;
+  }
+  .sell-bar {
+    background: red;
+    text-align: center;
+  }
+  #news-list {
+    padding: 20px;
+  }
+  .news-item {
+    background: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .news-title a {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0077cc;
+    text-decoration: none;
+  }
+  .news-title a:hover {
+    text-decoration: underline;
+  }
+  .news-meta {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+  }
 </style>
 </head>
 <body>
@@ -64,9 +104,8 @@ async function loadNews() {
     `;
 
     // 2️⃣ Nieuws ophalen
-    const apiKey = "38347feea47a4f0ea7f65acad44fd0f8";
+    const apiKey = "38347feea47a4f0ea7f65acad44fd0f8";  // Vervang hier door jouw eigen API key als je wil
     const url = `https://newsapi.org/v2/everything?q=XRP&language=en&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
-
     const res = await fetch(url);
     const data = await res.json();
 
@@ -75,13 +114,16 @@ async function loadNews() {
       return;
     }
 
+    // Sorteer artikelen op nieuwste eerst (extra zekerheid)
+    data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
     // 3️⃣ HTML genereren
     let html = '';
     data.articles.forEach(article => {
       const date = new Date(article.publishedAt).toLocaleString("nl-NL");
       html += `<div class="news-item">
         <div class="news-title">
-          <a href="${article.url}" target="_blank">${article.title}</a>
+          <a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a>
         </div>
         <div class="news-meta">Bron: ${article.source.name} • ${date}</div>
       </div>`;
@@ -98,7 +140,7 @@ async function loadNews() {
 // Eerste keer laden
 loadNews();
 
-// Elke 5 minuten verversen
+// Elke 5 minuten verversen (300.000 ms)
 setInterval(loadNews, 300000);
 </script>
 
